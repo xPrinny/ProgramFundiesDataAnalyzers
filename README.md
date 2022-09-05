@@ -1,6 +1,7 @@
 # ProgramFundiesDataAnalyzers
 
 __Objective__
+
 Python has become one of the most popular programming languages in a lot of application scenarios
 such as the data crawling, scripting, data analytics, machine learning and Artificial Intelligence. Thus,
 the objective of this project is to allow you to develop a Python program such that you can:
@@ -10,6 +11,7 @@ the objective of this project is to allow you to develop a Python program such t
 4. Gain more hands-on experience in solving a real-world problem using Python
 
 __The Detail Requirements__
+
 Data has become the new oil for now and the future. Most of, if not all, the industries have heavily relied on data to strategize their business. They have been collecting and generating a large amount of data from different resources. However, data is useless without analyzing them. Therefore, companies have invested a lot of resources and manpower to analyze the data and derive the insight that help them better understand what is happening and predict what will likely happen. The insight derived from the data analysis has empowered the companies to make more intelligent decision and strategic planning.
 
 Many startup companies have also relied on data analytics to provide data-driven innovations for their customers. And Python has become the most popular tool used in industry to drive this movement.
