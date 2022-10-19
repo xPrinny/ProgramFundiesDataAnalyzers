@@ -1,0 +1,315 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Tables {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<style>
+	#streamsCharts {
+		position: absolute;
+		left: -99999rem;
+	}
+	#submit {
+		float: right;
+		margin-left: 10px;
+	}
+	.custom-upload {
+		display: inline-block;
+	}
+	p {
+		display: table-row;
+	}
+	.inputLabel, input {
+		display: table-cell;
+		margin: 20px 0 0 10px;
+	}
+	.selectgroup-item {
+		margin-bottom: 15px;
+	}
+	.form-control {
+		display: inherit;
+	}
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+	<div class="content">
+		<div class="page-inner">
+			<div class="page-header">
+				<h4 class="page-title">Streams Chart Scrapper</h4>
+				<ul class="breadcrumbs">
+					<li class="nav-home">
+						<a href="#">
+							<i class="flaticon-home"></i>
+						</a>
+					</li>
+					<li class="separator">
+						<i class="flaticon-right-arrow"></i>
+					</li>
+					<li class="nav-item">
+						<a href="#">Stream Charts Scrapper</a>
+					</li>
+				</ul>
+			</div>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="card">
+						<div class="card-header">
+							<div class="card-title">File uploader</div>
+						</div>
+						<div class="card-body">
+							<div class="card-sub">									
+								Upload your Stream Charts .csv file here:
+							</div><br>
+							<table class="table mt-3">
+								<form id="uploadForm">
+									<label class="custom-upload btn btn-primary">
+										<input type="file" id="streamsCharts"/>
+										Select File <span id="file-selected"></span>
+									</label>
+									<button id="submit" class="btn btn-success btn-round">Upload</button>
+								</form>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="card">
+						<div class="card-header">
+							<div class="card-title">Data Scrapper - Streams Chart</div>
+						</div>
+						<div class="card-body">
+							<div class="card-sub">									
+								Enter Client ID and Token to scrap.
+							</div>
+							<table class="table mt-3">
+								<form id="scrapperForm">
+									<p>
+										<label class="inputLabel">Client ID</label>
+										<input type="text" class="form-control" id="fname" name="firstname" placeholder="Client ID">
+									</p>
+									<p>
+										<label class="inputLabel">Token</label>
+										<input type="text" class="form-control" id="lname" name="lastname" placeholder="Token">
+									</p>
+									<button id="submit" class="btn btn-success btn-round">Fetch</button>
+								</form>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="col">
+					<div class="card">
+						<div class="card-header">
+							<div class="card-title">Streams Chart Table</div>
+						</div>
+						<div class="card-body">
+							<div class="table-responsive">
+								<table id="multi-filter-select" class="display table table-striped table-hover"></table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+	<script>
+		// Updates custom file select box
+		$(document).on('change', '#streamsCharts', function(){
+			let fileName = '';
+			fileName = '(' + $(this)[0].files[0].name + ')';
+			$('#file-selected').html(fileName);
+		})
+
+		// Initalise Filter Table
+		var tableInitFlag = true;
+		function multiFilterTable(){
+			$('#multi-filter-select').DataTable( {
+				"pageLength": 5,
+				initComplete: function () {
+					this.api().columns().every( function () {
+						var column = this;
+						var select = $('<select class="form-control"><option value=""></option></select>')
+						.appendTo( $(column.footer()).empty() )
+						.on( 'change', function () {
+							var val = $.fn.dataTable.util.escapeRegex(
+								$(this).val()
+								);
+
+							column
+							.search( val ? '^'+val+'$' : '', true, false )
+							.draw();
+						} );
+
+						column.data().unique().sort().each( function ( d, j ) {
+							select.append( '<option value="'+d+'">'+d+'</option>' )
+						} );
+					} );
+				}
+			});
+		}
+
+		// Alert popup function
+		function alertPop(alertType){
+			const content = {};
+			if (alertType == 'Success'){
+				content.message = 'File successfully uploaded.';
+				content.title = 'Success!';
+				content.icon = 'fa fa-check';
+				type = 'success';
+			} else{
+				if (alertType == 'Empty'){
+					content.message = 'Please upload / fill in the required fields.';
+				} else if (alertType == 'Error'){
+					content.message = 'An error has occured.';
+				} else{
+					content.message = 'Something went really wrong that the error was not caught.';
+				}
+					content.title = 'Error!';
+					content.icon = 'fa fa-times';
+					type = 'danger';
+			};
+
+			$.notify(content,{
+				type: type,
+				placement: {
+					from: 'top',
+					align: 'right'
+				},
+				time: 1000,
+			});
+		};
+
+		// On any submit button
+		$(document).on('click', '.btn-round', function(e){
+			e.preventDefault();
+			buttonTxt = $(this)[0].innerText;
+
+			switch(buttonTxt){
+				case 'Upload':
+					storedFile = document.getElementById('streamsCharts').files[0] || 0
+					if (storedFile == 0){
+						alertPop('Empty');
+						break;
+					};
+					// Delete sort form if exist
+					$('#sortForm').remove();
+					let formData = new FormData();
+					formData.append('streamsCharts', storedFile);
+
+					$.ajax({
+						type:'POST',
+						url:'tableGenerator',
+						data:formData,
+						contentType:false,
+						processData:false,
+						success: function(data){
+							alertPop('Success')
+							// Store the dataframe
+							sessionStorage.setItem("csvData", data);
+							// Create filter form table
+							formCreation = '';
+							x = 0;
+							for (let dataValue in JSON.parse(data)){
+								if (x%4==0 && x!=0){ formCreation += '</tr><tr>' };
+								formCreation += '<label class="selectgroup-item"><input type="checkbox" class="selectgroup-input" name="filterDataSel" value='+ dataValue +'>'
+									+ '<span class="selectgroup-button">' + dataValue +'</span></label>';
+								x++;
+							};
+							formCreation += '</div><br><div id="container"><button id="submit" class="btn btn-success btn-round">Filter</button></div></form>';
+							// Check if table exists
+							if ($("#filterForm").length == 1){
+								formCreation = '<div class="selectgroup selectgroup-pills">' + formCreation;
+								$("#filterForm").html(formCreation);
+							} else{
+								formCreation = '<div class="card-title">Filter selection</div><br><form id="filterForm"><div class="selectgroup selectgroup-pills">' + formCreation;
+								document.getElementsByClassName('card-body')[0].innerHTML += formCreation;
+							};
+							// Clear select file name
+							$('#sortSelector').empty();
+						},
+						error: function(data){
+							alertPop('Error');
+						}
+					});
+					break;
+
+				case 'Fetch':
+					alertPop('Error');
+					break;
+
+				case 'Filter':
+					filterLst = []
+					// Check if at least one selected
+					checkLstSelected = $("#filterForm input:checked");
+					if (checkLstSelected.length > 0){
+						$.each(checkLstSelected, function(){
+							filterLst.push($(this).val());
+						});
+					} else{
+						alertPop('Empty');
+						break;
+					};
+
+					let formDataTable = new FormData();
+					storedData = sessionStorage.getItem("csvData")
+					formDataTable.append('csvData', storedData);
+					formDataTable.append('filteredList', filterLst);
+					$.ajax({
+						type:'POST',
+						url:'tableGenerator',
+						data:formDataTable,
+						contentType:false,
+						processData:false,
+						success: function(data){
+							alertPop('Success');
+							// Update the table
+							document.getElementsByClassName('table-striped')[0].innerHTML = data['html'];
+							if(tableInitFlag){
+								multiFilterTable();
+								tableInitFlag = false;
+							}
+
+							// Delete Download button if exists, then create button
+							$("*#submit").each(function(){
+								if (this.innerText == "Download"){
+									$(this).remove();
+								};
+							});
+							$("#container").prepend('<button id="submit" class="btn btn-success btn-round">Download</button>');
+
+							// Store json output
+							sessionStorage.setItem("filterCsvData", data['csv']);
+						},
+						error: function(data){
+							alertPop('Error');
+						}
+					});
+					break;
+
+				case 'Download':
+					// Create an element and hide it
+					var a = document.createElement("a");
+					document.body.appendChild(a);
+					a.style = "position: absolute; left: -99999rem;";
+
+					// Set the file to a blob then download it
+					var blob = new Blob([sessionStorage.getItem("filterCsvData")], {type: "octet/stream"}),
+						url = window.URL.createObjectURL(blob);
+					a.href = window.URL.createObjectURL(blob);;
+					a.download = 'filteredTable.csv';
+					a.click();
+
+					// Remove the url
+					window.URL.revokeObjectURL(url);
+					break;
+			};
+		});
+	</script>
+{% endblock javascripts %}

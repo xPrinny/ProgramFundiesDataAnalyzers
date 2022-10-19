@@ -1,0 +1,48 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+			
+	<div class="content">
+		<div class="panel-header bg-primary-gradient">
+			<div class="page-inner py-5">
+				<div class="d-flex align-items-left align-items-md-center flex-column flex-md-row">
+					<div>
+						<h2 class="text-white pb-2 fw-bold">Youtube Infograhpics Dashboard</h2>
+						<h5 class="text-white op-7 mb-2">Summary of all Youtube featured data</h5>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="page-inner mt--5">
+		</div>
+	</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+	<script>
+		$(document).ready(function() {
+			$.ajax({
+				type:'GET',
+				url:'chartGenerator',
+				success: function(data){
+					document.getElementsByClassName('page-inner')[1].innerHTML += data['htmlBody'];
+
+					for (var i = 0; i < data['chartSettings'].length; i++) {
+						console.log(data['chartSettings'][i])
+						new Chart(document.getElementById('chart'+i).getContext('2d'), data['chartSettings'][i]);
+					}
+				},
+				error: function(data){
+					console.log('Error loading charts.')
+				}
+			});
+		});
+	</script>
+{% endblock javascripts %}
