@@ -9,9 +9,16 @@ Tools that were created for this uses are:
 
 ### Installation
 #### Juypter Notebook
+Installing requirements
 ```
 $ pip3 install -r requirements.txt
 ```
+
+Download the dataset from [here](https://www.kaggle.com/datasets/rsrishav/youtube-trending-video-dataset)
+
+Extract any one of the region dataset and save it as `Youtube_dataset.csv`
+
+Transfer the file into the `data` folder
 
 ---
 
@@ -83,4 +90,6 @@ At this point, the app runs at `http://127.0.0.1:5000/`.
 Create a user and login.
 
 ## Credits
+[__Youtube Dataset__](https://www.kaggle.com/datasets/rsrishav/youtube-trending-video-dataset) - Dataset for Youtube data
+
 [__Atlantis Dark Flask__](https://github.com/app-generator/flask-atlantis-dark) - For flask template
