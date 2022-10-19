@@ -8,18 +8,80 @@ Tools that were created for this uses are:
 - Streams Charts Scrapper (For a list of Twitch streamers)
 
 ## Getting started
-__Prerequisites__
-
-Todo.
-
 __Installation__
+## Juypter Notebook
+```
+$ pip3 install -r requirements.txt
+```
 
-Todo.
+## GUI (Flask)
+Enter `flask` folder
 
-## Todo Features
-- [ ] GUI
-- [x] Read data from an external data sources, e.g. txt, Jason, excel or other formats.
-- [x] Allow users to view the datasets.
-- [ ] Allow users to search the data based on some criterion.
-- [x] Allow users to see some statistics information based on the data.
-- [ ] Allow users to export some of the results.
+### Set Up for `Windows` 
+Install modules via `VENV` (windows) 
+```
+$ virtualenv env
+$ .\env\Scripts\activate
+$ pip3 install -r requirements.txt
+```
+<br />
+
+Set Up Flask Environment
+```bash
+$ # CMD 
+$ set FLASK_APP=run.py
+$ set FLASK_ENV=development
+$
+$ # Powershell
+$ $env:FLASK_APP = ".\run.py"
+$ $env:FLASK_ENV = "development"
+```
+<br />
+
+Start the app
+```bash
+$ flask run
+```
+
+For future startups
+```bash
+$ .\env\Scripts\activate
+$ flask run
+```
+
+
+### Set Up for `Unix` / `MacOS` 
+Install modules via `VENV`  
+
+```bash
+$ virtualenv env
+$ source env/bin/activate
+$ pip3 install -r requirements.txt
+```
+<br />
+
+Set Up Flask Environment
+
+```bash
+$ export FLASK_APP=run.py
+$ export FLASK_ENV=development
+```
+<br />
+
+Start the app
+
+```bash
+$ flask run
+```
+
+At this point, the app runs at `http://127.0.0.1:5000/`. 
+<br />
+
+__Usage__
+## GUI (Flask)
+Login with
+```
+User: admin
+Password: password
+```
+or create a new user.
