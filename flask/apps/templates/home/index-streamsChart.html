@@ -105,9 +105,7 @@
 							<div class="card-title">Streams Chart Table</div>
 						</div>
 						<div class="card-body">
-							<div class="table-responsive">
-								<table id="multi-filter-select" class="display table table-striped table-hover"></table>
-							</div>
+							<div class="table-responsive"></div>
 						</div>
 					</div>
 				</div>
@@ -128,7 +126,6 @@
 		})
 
 		// Initalise Filter Table
-		var tableInitFlag = true;
 		function multiFilterTable(){
 			$('#multi-filter-select').DataTable( {
 				"pageLength": 5,
@@ -269,12 +266,12 @@
 						processData:false,
 						success: function(data){
 							alertPop('Success');
-							// Update the table
+							// Destroy then update the table
+							$('#multi-filter-select').DataTable().destroy();
+							drawTable = '<table id="multi-filter-select" class="display table table-striped table-hover"></table>';
+							document.getElementsByClassName('table-responsive')[0].innerHTML = drawTable
 							document.getElementsByClassName('table-striped')[0].innerHTML = data['html'];
-							if(tableInitFlag){
-								multiFilterTable();
-								tableInitFlag = false;
-							}
+							multiFilterTable();
 
 							// Delete Download button if exists, then create button
 							$("*#submit").each(function(){
