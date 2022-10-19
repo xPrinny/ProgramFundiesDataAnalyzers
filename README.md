@@ -1,6 +1,4 @@
 # Youtube Data Analyser
-
-## Introduction
 Youtube Data Analyzers is a project with an objective of having a finding our own data source and analysing it.
 
 Tools that were created for this uses are:
@@ -8,13 +6,16 @@ Tools that were created for this uses are:
 - Streams Charts Scrapper (For a list of Twitch streamers)
 
 ## Getting started
-## __Installation__
-### Juypter Notebook
+
+### Installation
+#### Juypter Notebook
 ```
 $ pip3 install -r requirements.txt
 ```
 
-### GUI (Flask)
+---
+
+#### GUI (Flask)
 Enter `flask` folder
 
 #### Set Up for `Windows` 
@@ -77,6 +78,9 @@ $ flask run
 At this point, the app runs at `http://127.0.0.1:5000/`. 
 <br />
 
-## __Usage__
+## Usage
 ### GUI (Flask)
 Create a user and login.
+
+## Credits
+[__Atlantis Dark Flask__](https://github.com/app-generator/flask-atlantis-dark) - For flask template
