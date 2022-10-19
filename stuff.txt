@@ -1,2 +1,0 @@
-For flask
-pip install Werkzeug
