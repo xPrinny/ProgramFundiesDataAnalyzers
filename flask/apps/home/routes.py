@@ -5,7 +5,7 @@ Copyright (c) 2019 - present AppSeed.us
 
 from re import S
 from apps.home import blueprint
-from apps import streamsChartsScrapper
+from apps.streamsChartsScrapper import streamsChartsScrapperAPI
 from flask import render_template, request, Flask, redirect, jsonify
 from flask_login import login_required
 from jinja2 import TemplateNotFound
@@ -58,13 +58,17 @@ def generateTable():
             return({"html": filterDF.to_html(justify='left', index=False), "csv": filterDF.to_csv(index=False)})
         return redirect(request.referrer)
 
-@blueprint.route('/chartGenerator', methods = ['GET'])
+@blueprint.route('/chartGenerator', methods = ['POST'])
 def generateCharts():
+    platformType = request.get_data(as_text=True)
     # Get the list of csv files
     listOfCSV = []
     for file in os.listdir("apps/graphsExcel/"):
         if file.lower().endswith(".csv"):
-            listOfCSV.append(file)
+            if file.lower().startswith(platformType):
+                listOfCSV.append(file)
+            elif file.lower().startswith(platformType):
+                listOfCSV.append(file)
 
     # Setup strings for creating html table
     chartHTML = ''
@@ -81,7 +85,7 @@ def generateCharts():
         # Makes a new div that supports two cards
         if cardDiv == 1:
             chartHTML += bodyTwoCard
-        chartHTML += mediumCardBody[0] + csvFileSplit[1] + mediumCardBody[1] + str(chartId) + mediumCardBody[2]
+        chartHTML += mediumCardBody[0] + csvFileSplit[2] + mediumCardBody[1] + str(chartId) + mediumCardBody[2]
         if cardDiv == 2:
             chartHTML += '</div>'
             cardDiv = 0
@@ -91,7 +95,7 @@ def generateCharts():
         # Generate the settings for the graphs
         with open('apps/graphsExcel/' + csvFile, mode='r') as f:
             csvDict = csv.reader(f)
-            match csvFileSplit[0]:
+            match csvFileSplit[1]:
                 case 'line':
                     chartSettings.append(generateLineChart(csvDict))
                 case 'bar':
@@ -152,7 +156,7 @@ def generateLineChart(csvDict):
             }
         }
     }
-    return(myLineChart)
+    return myLineChart
 
 def generateBarChart(csvDict):
     csvRowX = []
@@ -187,14 +191,14 @@ def generateBarChart(csvDict):
             },
         }
     }
-    return(myBarChart)
+    return myBarChart
 
 @blueprint.route('/streamsChartScrap', methods = ['POST'])
-def asd():
+def steamChartScrap():
+    csvOutput = streamsChartsScrapperAPI.get_top_twitch_streamers(request.form['clientID'], request.form['tokenKey'])
+    csvToDF = pd.read_json(json.dumps(csvOutput))
 
-    #csvOutput = streamsChartsScrapperAPI.get_top_twitch_streamers(clientID, tokenKey)
-
-    return redirect(request.referrer)
+    return csvToDF.to_csv(index=False)
 
 # Helper - Extract current page name from request
 def get_segment(request):

@@ -87,11 +87,11 @@
 								<form id="scrapperForm">
 									<p>
 										<label class="inputLabel">Client ID</label>
-										<input type="text" class="form-control" id="fname" name="firstname" placeholder="Client ID">
+										<input type="text" class="form-control" id="clientID" name="clientID" placeholder="Client ID">
 									</p>
 									<p>
 										<label class="inputLabel">Token</label>
-										<input type="text" class="form-control" id="lname" name="lastname" placeholder="Token">
+										<input type="text" class="form-control" id="tokenKey" name="tokenKey" placeholder="Token">
 									</p>
 									<button id="submit" class="btn btn-success btn-round">Fetch</button>
 								</form>
@@ -183,6 +183,24 @@
 			});
 		};
 
+		// Download
+		function downloadFile(fileToDownload, fileName){
+			// Create an element and hide it
+			var a = document.createElement("a");
+			document.body.appendChild(a);
+			a.style = "position: absolute; left: -99999rem;";
+
+			// Set the file to a blob then download it
+			var blob = new Blob(fileToDownload, {type: "octet/stream"}),
+				url = window.URL.createObjectURL(blob);
+			a.href = window.URL.createObjectURL(blob);;
+			a.download = fileName;
+			a.click();
+
+			// Remove the url
+			window.URL.revokeObjectURL(url);
+		};
+
 		// On any submit button
 		$(document).on('click', '.btn-round', function(e){
 			e.preventDefault();
@@ -238,7 +256,31 @@
 					break;
 
 				case 'Fetch':
-					alertPop('Error');
+					// Check if both input is filled
+					clientID = $("#clientID").val();
+					tokenKey = $("#tokenKey").val();
+					if (!clientID.length || !tokenKey.length){
+						alertPop('Empty');
+						break;
+					}
+
+					let scrapperForm = new FormData();
+					scrapperForm.append('clientID', clientID);
+					scrapperForm.append('tokenKey', tokenKey);
+					$.ajax({
+						type:'POST',
+						url:'streamsChartScrap',
+						data:scrapperForm,
+						contentType:false,
+						processData:false,
+						success: function(data){
+							alertPop('Success');
+							downloadFile([data], 'streamsChart.csv');
+						},
+						error: function(data){
+							alertPop('Error');
+						}
+					});
 					break;
 
 				case 'Filter':
@@ -291,20 +333,7 @@
 					break;
 
 				case 'Download':
-					// Create an element and hide it
-					var a = document.createElement("a");
-					document.body.appendChild(a);
-					a.style = "position: absolute; left: -99999rem;";
-
-					// Set the file to a blob then download it
-					var blob = new Blob([sessionStorage.getItem("filterCsvData")], {type: "octet/stream"}),
-						url = window.URL.createObjectURL(blob);
-					a.href = window.URL.createObjectURL(blob);;
-					a.download = 'filteredTable.csv';
-					a.click();
-
-					// Remove the url
-					window.URL.revokeObjectURL(url);
+					downloadFile([sessionStorage.getItem("filterCsvData")], 'filteredTable.csv');
 					break;
 			};
 		});

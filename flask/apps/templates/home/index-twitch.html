@@ -12,8 +12,8 @@
 			<div class="page-inner py-5">
 				<div class="d-flex align-items-left align-items-md-center flex-column flex-md-row">
 					<div>
-						<h2 class="text-white pb-2 fw-bold">Youtube Infograhpics Dashboard</h2>
-						<h5 class="text-white op-7 mb-2">Summary of all Youtube featured data</h5>
+						<h2 class="text-white pb-2 fw-bold">Twitch Infograhpics Dashboard</h2>
+						<h5 class="text-white op-7 mb-2">Summary of all Twitch featured data</h5>
 					</div>
 				</div>
 			</div>
@@ -31,7 +31,7 @@
 			$.ajax({
 				type:'POST',
 				url:'chartGenerator',
-				data:'yt',
+				data:'twitch',
 				success: function(data){
 					document.getElementsByClassName('page-inner')[1].innerHTML += data['htmlBody'];
 
